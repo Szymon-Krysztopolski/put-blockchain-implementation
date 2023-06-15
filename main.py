@@ -1,6 +1,6 @@
 import itertools
 import random
-import sys
+import sys, time
 
 import mock
 import manager
@@ -51,11 +51,14 @@ def change_user() -> None:
             return
     print("Wrong credentials!")
 
-def add_transactions() -> None:
+def add_transactions(n=None) -> None:
     challenge_order = list(range(1, len(User_list)))
     random.shuffle(challenge_order)
     
-    size = int(input("How many transactions do you want to generate: "))
+    if n == None:
+        size = int(input("How many transactions do you want to generate: "))
+    else:
+        size = n
     new_transactions = [current_user.get_username() + ": ------ " + element for element in random.sample(mock.get_lorem(), min(5, size))]
 
     active_challange = True
@@ -91,9 +94,23 @@ def remove_blocks():
         os.remove(f)
     print("Startup cleanup completed")
 
+def test(n: int) -> None:
+    start_time = time.time()
+    for _ in range(n):
+        add_transactions(5)
+    end_time = time.time()
+
+    elapsed_time = end_time - start_time
+    print(f"Elapsed time: {elapsed_time} for {n} size") 
+
 if __name__ == "__main__":
     # remove_blocks()
     if ("--init" in sys.argv):
         remove_blocks()
+    if ("--test" in sys.argv):
+        remove_blocks()
+        init()
+        test(int(sys.argv[2]))
+        exit()
     init()
     main()
